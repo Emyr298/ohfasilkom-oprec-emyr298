@@ -5,7 +5,6 @@ import axios from 'axios';
 
 // References:
 // https://stackoverflow.com/questions/572768/styling-an-input-type-file-button
-// https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string
 
 type Inputs = {
   title: string,
@@ -15,16 +14,15 @@ type Inputs = {
 };
 
 type Props = {
+  fetchImages: () => void,
   setPopupState: (value: string) => void,
 };
 
-export default function Window({ setPopupState }: Props) {
+export default function UploadForm({ fetchImages, setPopupState }: Props) {
   const [fileName, setFileName] = useState<string>('No file choosen');
   
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (data.category === 'Category') return;
-    
     const formData = new FormData();
     formData.append('title', data.title);
     formData.append('category', data.category);
@@ -38,6 +36,8 @@ export default function Window({ setPopupState }: Props) {
           },
       });
       
+      fetchImages();
+      setPopupState('none');
       console.log(response.data);
     } catch(error) {
       console.log(error);

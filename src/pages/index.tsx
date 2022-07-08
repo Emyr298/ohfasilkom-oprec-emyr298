@@ -9,11 +9,14 @@ import { UploadForm } from '../components/UploadForm';
 import { GetServerSideProps } from 'next';
 import { SearchParams } from '../types/SeachParams';
 import axios from 'axios';
+import { PostInfo } from '../components/PostInfo';
 
 const Home: NextPage = () => {
   const [searchState, setSearchState] = useState<SearchParams>({ page: 1 });
   const [postList, setPostList] = useState<Post[]>([]);
   const [popupState, setPopupState] = useState<string>('none'); // none, upload, post
+  const [currentPostId, setCurrentPostId] = useState<number | null>(null);
+  const [currentPost, setCurrentPost] = useState<Post | null>(null);
   
   useEffect(() => {
     fetchImages();
@@ -22,6 +25,11 @@ const Home: NextPage = () => {
   useEffect(() => {
     fetchImages();
   }, [searchState]);
+  
+  useEffect(() => {
+    fetchPost();
+    if (currentPostId != null) setPopupState('post');
+  }, [currentPostId]);
   
   const fetchImages = async function(): Promise<void> {
     try {
@@ -40,13 +48,35 @@ const Home: NextPage = () => {
       });
       
       setPostList(data);
-    } catch(error) {
+    } catch (error) {
       setPostList([]);
     }
   }
   
+  const fetchPost = async function(): Promise<void> {
+    if (!currentPostId) {
+      setCurrentPost(null);
+      return;
+    }
+    
+    try {
+      const response = await axios.get(`https://oh-oprec-be.rorre.xyz/api/post/${currentPostId}`, {
+        headers: {
+          'Authorization': 'Bearer 0cf4653f-badb-4406-b01f-be038aa39a32',
+        },
+      });
+      console.log('fetched post');
+      
+      response.data.url = 'https://oh-oprec-be.rorre.xyz' + response.data.url;
+      
+      setCurrentPost(response.data);
+    } catch (error) {
+      setCurrentPost(null);
+    }
+  }
+  
   const mapPostList = function(): JSX.Element[] {
-    return postList.map((data: Post) => <Thumbnail post={data} key={data.id} />);
+    return postList.map((data: Post) => <Thumbnail post={data} setCurrentPostId={setCurrentPostId} key={data.id} />);
   }
   
   const handlePageClick = function(diff: number): void {
@@ -83,7 +113,21 @@ const Home: NextPage = () => {
       </div>
       { popupState === 'upload' &&
         <Window title="Upload" onClose={() => {setPopupState('none')}}>
-          <UploadForm setPopupState={setPopupState} />
+          <UploadForm fetchImages={fetchImages} setPopupState={setPopupState} />
+        </Window>
+      }
+      { popupState === 'post' &&
+        <Window title="Post" onClose={() => {
+          setCurrentPostId(null);
+          setPopupState('none');
+        }}>
+          <PostInfo
+            post={currentPost}
+            setPopupState={setPopupState}
+            setCurrentPost={setCurrentPost}
+            setCurrentPostId={setCurrentPostId}
+            fetchImages={fetchImages}
+          />
         </Window>
       }
     </>
