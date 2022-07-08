@@ -30,9 +30,9 @@ export default function SearchBox({ setSearchState }: Props) {
   };
   
   return (
-    <form className="h-10 mx-10 mt-2 flex flex-row" onSubmit={handleSubmit(onSubmit)}>
-      <input className="h-full flex-initial w-full border-2 rounded-l-xl p-2" type="text" placeholder="Title" {...register('title')} />
-      <select className="h-full flex-initial w-64 border-t-2 border-b-2 border-r-2" defaultValue="Category" {...register('category')}>
+    <form className="sm:h-10 mx-10 mt-2 flex sm:flex-row flex-col" onSubmit={handleSubmit(onSubmit)}>
+      <input className="sm:h-full h-10 sm:flex-initial sm:w-full border-2 sm:rounded-l-xl sm:rounded-r-none rounded-t-xl p-2" type="text" placeholder="Title" {...register('title')} />
+      <select className="sm:h-full h-10 sm:flex-initial sm:w-64 sm:border-t-2 sm:border-b-2 sm:border-r-2 sm:border-l-0 border-l-2 border-r-2 border-b-2" defaultValue="Category" {...register('category')}>
         <option>Category</option>
         <option>artwork</option>
         <option>anime</option>
@@ -40,8 +40,8 @@ export default function SearchBox({ setSearchState }: Props) {
         <option>photography</option>
         <option>furry</option>
       </select>
-      <input className="h-full flex-initial w-64 border-t-2 border-b-2" type="date" placeholder="Uploaded At" {...register('uploadedAt')} />
-      <input className="h-full flex-initial w-64 bg-sky-400 hover:bg-sky-500 border-2 rounded-r-xl cursor-pointer" type="submit" value="Search" />
+      <input className="sm:h-full h-10 sm:flex-initial sm:w-64 sm:border-t-2 sm:border-b-2 sm:border-l-0 sm:border-r-0 border-l-2 border-r-2 " type="date" placeholder="Uploaded At" {...register('uploadedAt')} />
+      <input className="sm:h-full h-10 sm:flex-initial sm:w-64 bg-sky-400 hover:bg-sky-500 border-2 sm:rounded-r-xl sm:rounded-l-none rounded-b-xl cursor-pointer" type="submit" value="Search" />
     </form>
   );
-};
+}
