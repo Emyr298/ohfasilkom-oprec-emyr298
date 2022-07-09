@@ -20,6 +20,7 @@ type Props = {
 
 export default function UploadForm({ fetchImages, setPopupState }: Props) {
   const [fileName, setFileName] = useState<string>('No file choosen');
+  const [uploadErrorMessage, setUploadErrorMessage] = useState<string | null>(null);
   
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -38,9 +39,8 @@ export default function UploadForm({ fetchImages, setPopupState }: Props) {
       
       fetchImages();
       setPopupState('none');
-      console.log(response.data);
     } catch(error) {
-      console.log(error);
+      setUploadErrorMessage('error: couldn\'t connect to the server');
     }
   };
   
@@ -107,6 +107,11 @@ export default function UploadForm({ fetchImages, setPopupState }: Props) {
         </>
       }
       <input className="block w-full h-8 mt-2 bg-sky-400 hover:bg-sky-500 rounded-xl cursor-pointer" type="submit" value="Upload" />
+      {uploadErrorMessage &&
+        <>
+          {errorSpan(uploadErrorMessage)}
+        </>
+      }
     </form>
   );
 };

@@ -40,8 +40,8 @@ export default function SearchBox({ setSearchState }: Props) {
         <option>photography</option>
         <option>furry</option>
       </select>
-      <input className="pl-2 sm:h-full h-10 sm:flex-initial sm:w-64 sm:border-t-2 sm:border-b-2 sm:border-l-0 sm:border-r-0 border-l-2 border-r-2 " type="date" placeholder="Uploaded At" {...register('uploadedAt')} />
-      <input className="sm:h-full h-10 sm:flex-initial sm:w-64 bg-sky-400 hover:bg-sky-500 border-2 sm:rounded-r-xl sm:rounded-l-none rounded-b-xl cursor-pointer" type="submit" value="Search" />
+      <input className="pl-2 sm:h-full h-10 sm:flex-initial sm:w-64 sm:border-t-2 sm:border-l-0 sm:border-r-0 border-l-2 border-r-2 border-b-2 " type="date" placeholder="Uploaded At" {...register('uploadedAt')} />
+      <input className="sm:h-full h-10 sm:flex-initial sm:w-64 bg-sky-400 hover:bg-sky-500 sm:rounded-r-xl sm:rounded-l-none rounded-b-xl cursor-pointer" type="submit" value="Search" />
     </form>
   );
 }

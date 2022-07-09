@@ -20,6 +20,7 @@ type Props = {
 
 export default function PostInfo({ post, fetchImages, setCurrentPostId, setCurrentPost, setPopupState }: Props) {
   const [isModifying, setIsModifying] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -40,11 +41,12 @@ export default function PostInfo({ post, fetchImages, setCurrentPostId, setCurre
       
       response.data.url = 'https://oh-oprec-be.rorre.xyz' + response.data.url;
       
+      setErrorMessage(null);
       setCurrentPost(response.data);
       fetchImages();
       setIsModifying(false);
     } catch(error) {
-      console.log(error);
+      setErrorMessage('error: couldn\'t connect to the server');
     }
   };
   
@@ -64,7 +66,7 @@ export default function PostInfo({ post, fetchImages, setCurrentPostId, setCurre
       setCurrentPostId(null);
       setPopupState('none');
     } catch (error) {
-      console.log(error); // TODO: error message
+      setErrorMessage('error: couldn\'t connect to the server');
     }
   }
   
@@ -80,7 +82,7 @@ export default function PostInfo({ post, fetchImages, setCurrentPostId, setCurre
   
   return (
     <>
-      { post != null ?
+      { post != null &&
         <>
           <div className="h-36 relative flex-initial rounded-xl border-2 overflow-hidden">
             <Image 
@@ -95,14 +97,17 @@ export default function PostInfo({ post, fetchImages, setCurrentPostId, setCurre
             { !isModifying ?
               <>
                 <button className="mr-2 hover:text-red-500" onClick={onDelete}>Delete</button>
-                <button className="hover:text-yellow-500" onClick={() => {setIsModifying(true)}}>Modify</button>
+                <button className="hover:text-yellow-500" onClick={() => {setErrorMessage(null); setIsModifying(true);}}>Modify</button>
               </>
               :
               <>
-                <button className="hover:text-red-500" onClick={() => {setIsModifying(false)}}>Cancel</button>
+                <button className="hover:text-red-500" onClick={() => {setErrorMessage(null); setIsModifying(false);}}>Cancel</button>
               </>
             }
           </div>
+          {errorMessage && !isModifying &&
+            <span className="block text-red-500 text-sm text-center text-right">{errorMessage}</span>
+          }
           { !isModifying ?
             <div className="mt-2">
               <span className="block w-full pl-2 h-8 border-2 rounded-xl">{post.title}</span>
@@ -135,11 +140,12 @@ export default function PostInfo({ post, fetchImages, setCurrentPostId, setCurre
                 </>
               }
               <input className="block w-full h-8 mt-2 bg-sky-400 hover:bg-sky-500 rounded-xl cursor-pointer" type="submit" value="Save" />
+              {errorMessage &&
+                <span className='text-red-500 text-sm'>{errorMessage}</span>
+              }
             </form>
           }
         </>
-        :
-        <span>Post not found</span>
       }
     </>
   );

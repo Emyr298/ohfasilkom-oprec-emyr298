@@ -17,6 +17,8 @@ const Home: NextPage = () => {
   const [popupState, setPopupState] = useState<string>('none'); // none, upload, post
   const [currentPostId, setCurrentPostId] = useState<number | null>(null);
   const [currentPost, setCurrentPost] = useState<Post | null>(null);
+  const [fetchErrorMessage, setFetchErrorMessage] = useState<string | null>(null);
+  const [postErrorMessage, setPostErrorMessage] = useState<string | null>(null);
   
   useEffect(() => {
     fetchImages();
@@ -47,8 +49,10 @@ const Home: NextPage = () => {
         return value;
       });
       
+      setFetchErrorMessage(null);
       setPostList(data);
     } catch (error) {
+      setFetchErrorMessage('error: couldn\'t connect to the server');
       setPostList([]);
     }
   }
@@ -69,8 +73,10 @@ const Home: NextPage = () => {
       
       response.data.url = 'https://oh-oprec-be.rorre.xyz' + response.data.url;
       
+      setPostErrorMessage(null);
       setCurrentPost(response.data);
     } catch (error) {
+      setPostErrorMessage('error: couldn\'t connect to the server');
       setCurrentPost(null);
     }
   }
@@ -96,7 +102,15 @@ const Home: NextPage = () => {
         <button className="w-full h-full bg-sky-400 hover:bg-sky-500 rounded-xl" onClick={() => {setPopupState('upload')}}>Upload</button>
       </div>
       <div className="mt-2 mb-2 flex flex-row flex-wrap flex-none justify-center">
-        {mapPostList()}
+        {fetchErrorMessage &&
+          <span className="text-xl text-red-500">{fetchErrorMessage}</span>
+        }
+        {!fetchErrorMessage && postList.length === 0 &&
+          <span className="text-xl text-gray-500">No image available</span>
+        }
+        {!fetchErrorMessage && postList.length > 0 &&
+          <>{mapPostList()}</>
+        }
       </div>
       <div className="mb-2 flex items-center justify-center">
         { searchState.page > 1 ?
@@ -118,16 +132,21 @@ const Home: NextPage = () => {
       }
       { popupState === 'post' &&
         <Window title="Post" onClose={() => {
+          setPostErrorMessage(null);
           setCurrentPostId(null);
           setPopupState('none');
         }}>
-          <PostInfo
-            post={currentPost}
-            setPopupState={setPopupState}
-            setCurrentPost={setCurrentPost}
-            setCurrentPostId={setCurrentPostId}
-            fetchImages={fetchImages}
-          />
+          {postErrorMessage ?
+            <span className="block text-red-500 text-sm text-center">{postErrorMessage}</span>
+            :
+            <PostInfo
+              post={currentPost}
+              setPopupState={setPopupState}
+              setCurrentPost={setCurrentPost}
+              setCurrentPostId={setCurrentPostId}
+              fetchImages={fetchImages}
+            />
+          }
         </Window>
       }
     </>
